@@ -51,7 +51,7 @@ void back_propagation(
     for(int j=0; j<INPUT_NODES;j++){
         double sum =0.0;
         for(int i=0;i<OUTPUT_NODES;i++){
-            sum += output_b[j] * weight[j*OUTPUT_NODES+i];
+            sum += output_b[i] * weight[j*OUTPUT_NODES+i];
         }
 
         if(act==LINEAR){
