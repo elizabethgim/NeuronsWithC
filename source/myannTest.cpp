@@ -11,19 +11,26 @@ double target[OUTPUT_NODES] = {0.01, 0.99};
 double hidden[HIDDEN_NODES];
 double output[OUTPUT_NODES];
 
-double weightH[INPUT_NODES][HIDDEN_NODES] = {{0.15, 0.25}, { 0.20, 0.30}};
+double weightH[INPUT_NODES][HIDDEN_NODES] = {{0.15, 0.25}, {0.20, 0.30}};
 double biasH[HIDDEN_NODES] = {0.35, 0.35};
 
-double weightO[INPUT_NODES][OUTPUT_NODES] = {{0.40, 0.50}, { 0.45, 0.55}};
+double weightO[INPUT_NODES][OUTPUT_NODES] = {{0.40, 0.50}, {0.45, 0.55}};
 double biasO[OUTPUT_NODES] = {0.60, 0.60};
 
 double output_b[OUTPUT_NODES];
 double input_b[INPUT_NODES];
+double DoutputE[OUTPUT_NODES];
+
+double hidden_b[HIDDEN_NODES];
 
 int main(){
     feed_forward(input, (const double*)weightH, biasH, hidden, INPUT_NODES, HIDDEN_NODES, SIGMOID);
     feed_forward(hidden, (const double*)weightO, biasO, output, HIDDEN_NODES, OUTPUT_NODES, SIGMOID);
     
     get_error(target, output, OUTPUT_NODES);
+    get_DoutputE(target, output, DoutputE, OUTPUT_NODES);
+
+    prepare_back_propagation(DoutputE, output, output_b, OUTPUT_NODES, SIGMOID);
+    back_propagation(output_b, (const double*)weightO, hidden, hidden_b, OUTPUT_NODES, INPUT_NODES, SIGMOID);
     return 0;
 }

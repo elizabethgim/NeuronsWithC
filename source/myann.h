@@ -86,3 +86,37 @@ double get_error(
     return Error;
 
 }
+
+void get_DoutputE(
+    const double *target, 
+    const double *output, 
+    double *DoutputE, 
+    const int OUTPUT_NODES)
+{
+    for(int i=0;i<OUTPUT_NODES;i++){
+        DoutputE[i] = output[i]-target[i];
+        printf("Doutput[%i]=%f\n",i, DoutputE[i]);
+    }
+}
+
+void prepare_back_propagation(
+    const double *DoutputE, 
+    const double *output,
+    double *output_b,
+    const int OUTPUT_NODES,
+    activation_t act
+){
+    for(int i=0;i<OUTPUT_NODES;i++){
+        if(act==LINEAR){
+            output_b[i] = DoutputE[i];
+        }else if(act == SIGMOID){
+            output_b[i] = output[i] * (1 - output[i]) * DoutputE[i] ;
+        }else if(act==RELU){
+            output_b[i] = (output[i] > 0? 1 : 0) * DoutputE[i];
+        }
+        
+        printf("output_b[%d] = %f\n", i, output_b[i]);
+
+    }
+    
+}
