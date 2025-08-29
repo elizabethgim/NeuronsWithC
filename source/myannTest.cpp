@@ -23,6 +23,9 @@ double DoutputE[OUTPUT_NODES];
 
 double hidden_b[HIDDEN_NODES];
 
+double DweightE[INPUT_NODES][HIDDEN_NODES];
+double DbiasE[HIDDEN_NODES];
+
 int main(){
     feed_forward(input, (const double*)weightH, biasH, hidden, INPUT_NODES, HIDDEN_NODES, SIGMOID);
     feed_forward(hidden, (const double*)weightO, biasO, output, HIDDEN_NODES, OUTPUT_NODES, SIGMOID);
@@ -32,5 +35,8 @@ int main(){
 
     prepare_back_propagation(DoutputE, output, output_b, OUTPUT_NODES, SIGMOID);
     back_propagation(output_b, (const double*)weightO, hidden, hidden_b, OUTPUT_NODES, INPUT_NODES, SIGMOID);
+    
+    get_gradient((double *)DweightE, DbiasE, hidden_b, input, INPUT_NODES, HIDDEN_NODES);
+
     return 0;
 }

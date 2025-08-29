@@ -120,3 +120,21 @@ void prepare_back_propagation(
     }
     
 }
+
+void get_gradient(
+    double *DweightE,
+    double *DbiasE,
+    const double *output_b,
+    const double *input_f,
+    const int F_INPUT_NODES,
+    const int OUTPUT_NODES
+){
+    for(int j=0;j<OUTPUT_NODES;j++){
+        for(int i=0;i<F_INPUT_NODES;i++){
+            DweightE[i*OUTPUT_NODES+j] = input_f[i] * output_b[j];
+            printf("DweightE[%d][%d] = %f\n", i, j, DweightE[i*OUTPUT_NODES+j]);
+        }
+        DbiasE[j] = 1 * output_b[j];
+        printf("DbiasE[%d]=%f\n", j, DbiasE[j]);
+    }
+}
