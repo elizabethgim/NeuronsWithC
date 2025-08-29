@@ -7,6 +7,11 @@ typedef enum _activation{
     RELU = 2
 } activation_t;
 
+typedef enum _loss{
+    MSE = 0,
+    CEE = 1
+} loss_t;
+
 void feed_forward(
     const double *input,
     const double *weight,
@@ -35,7 +40,7 @@ void feed_forward(
             output[j] = prediction > 0? prediction : 0;
         }
 
-        printf("output[%d] = %f\n", j, output[j]);
+        // printf("output[%d] = %f\n", j, output[j]);
     }
 }
 
@@ -62,27 +67,32 @@ void back_propagation(
             input_b[j] = (input_f[j] > 0? 1 : 0) * sum;
         }
 
-        printf("input_b[%d] = %f\n", j, input_b[j]);
+        // printf("input_b[%d] = %f\n", j, input_b[j]);
     }
 }
 
 double get_error(
     const double *target,
     const double *output,
-    const int OUTPUT_NODES
+    const int OUTPUT_NODES,
+    loss_t loss
 ){
     double Error=0.0;
     double error[OUTPUT_NODES];
     double sum_error = 0.0;
 
     for(int i=0;i<OUTPUT_NODES;i++){
-        error[i] = 0.5 *(output[i]-target[i])*(output[i]-target[i]);
-        printf("error[%d] = %f\n", i, error[i]);
+        if(loss == MSE){
+            error[i] = 0.5 *(output[i]-target[i])*(output[i]-target[i]);
+        } else if(loss == CEE){
+            error[i] = - target[i]*log(output[i]);
+        }
+        // printf("error[%d] = %f\n", i, error[i]);
         sum_error += error[i];
     }
 
     Error = sum_error;
-    printf("Error = %f\n", Error);
+    // printf("Error = %f\n", Error);
     return Error;
 
 }
@@ -95,7 +105,7 @@ void get_DoutputE(
 {
     for(int i=0;i<OUTPUT_NODES;i++){
         DoutputE[i] = output[i]-target[i];
-        printf("Doutput[%i]=%f\n",i, DoutputE[i]);
+        // printf("Doutput[%i]=%f\n",i, DoutputE[i]);
     }
 }
 
@@ -115,13 +125,13 @@ void prepare_back_propagation(
             output_b[i] = (output[i] > 0? 1 : 0) * DoutputE[i];
         }
         
-        printf("output_b[%d] = %f\n", i, output_b[i]);
+        // printf("output_b[%d] = %f\n", i, output_b[i]);
 
     }
     
 }
 
-void get_gradient(
+void get_gradients(
     double *DweightE,
     double *DbiasE,
     const double *output_b,
@@ -132,10 +142,10 @@ void get_gradient(
     for(int j=0;j<OUTPUT_NODES;j++){
         for(int i=0;i<F_INPUT_NODES;i++){
             DweightE[i*OUTPUT_NODES+j] = input_f[i] * output_b[j];
-            printf("DweightE[%d][%d] = %f\n", i, j, DweightE[i*OUTPUT_NODES+j]);
+            // printf("DweightE[%d][%d] = %f\n", i, j, DweightE[i*OUTPUT_NODES+j]);
         }
         DbiasE[j] = 1 * output_b[j];
-        printf("DbiasE[%d]=%f\n", j, DbiasE[j]);
+        // printf("DbiasE[%d]=%f\n", j, DbiasE[j]);
     }
 }
 
@@ -151,10 +161,10 @@ void apply_gradient(
     for(int j=0; j<OUTPUT_NODES;j++){
         for(int i=0; i<INPUT_NODES;i++){
             weight[i*OUTPUT_NODES+j] -= learning_rate*DweightE[i*OUTPUT_NODES+j];
-            printf("weight[%d][%d]=%f\n", i,j,weight[i*OUTPUT_NODES+j]);
+            // printf("weight[%d][%d]=%f\n", i,j,weight[i*OUTPUT_NODES+j]);
         }
         bias[j] -= learning_rate*DbiasE[j];
-        printf("bias[%d]=%f\n",j, bias[j]);
+        // printf("bias[%d]=%f\n",j, bias[j]);
     }
 
 
