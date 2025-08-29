@@ -29,16 +29,27 @@ double DbiasE[HIDDEN_NODES];
 double learning_rate = 0.05;
 
 int main(){
-    feed_forward(input, (const double*)weightH, biasH, hidden, INPUT_NODES, HIDDEN_NODES, SIGMOID);
-    feed_forward(hidden, (const double*)weightO, biasO, output, HIDDEN_NODES, OUTPUT_NODES, SIGMOID);
-    
-    get_error(target, output, OUTPUT_NODES);
-    get_DoutputE(target, output, DoutputE, OUTPUT_NODES);
+    for(long epoch=1; epoch<=1000000;epoch++){
+        feed_forward(input, (const double*)weightH, biasH, hidden, INPUT_NODES, HIDDEN_NODES, SIGMOID);
+        feed_forward(hidden, (const double*)weightO, biasO, output, HIDDEN_NODES, OUTPUT_NODES, SIGMOID);
+        
+        double Error = get_error(target, output, OUTPUT_NODES);
 
-    prepare_back_propagation(DoutputE, output, output_b, OUTPUT_NODES, SIGMOID);
-    back_propagation(output_b, (const double*)weightO, hidden, hidden_b, OUTPUT_NODES, INPUT_NODES, SIGMOID);
+        if(Error < 0.0001){
+            printf("epoch = %d\n", epoch);
+            printf("Error = %f\n", Error);
+            printf("output[0] = %f\n", output[0]);
+            printf("output[1] = %f\n", output[1]);
+        }
+
+        get_DoutputE(target, output, DoutputE, OUTPUT_NODES);
+
+        prepare_back_propagation(DoutputE, output, output_b, OUTPUT_NODES, SIGMOID);
+        back_propagation(output_b, (const double*)weightO, hidden, hidden_b, OUTPUT_NODES, INPUT_NODES, SIGMOID);
+        
+        get_gradient((double *)DweightE, DbiasE, hidden_b, input, INPUT_NODES, HIDDEN_NODES);
+        apply_gradient((double *)DweightE, DbiasE, learning_rate, (double *)weightH, biasH, INPUT_NODES, OUTPUT_NODES);
+    }
     
-    get_gradient((double *)DweightE, DbiasE, hidden_b, input, INPUT_NODES, HIDDEN_NODES);
-    apply_gradient((double *)DweightE, DbiasE, learning_rate, (double *)weightH, biasH, INPUT_NODES, OUTPUT_NODES);
     return 0;
 }
