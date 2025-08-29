@@ -138,3 +138,24 @@ void get_gradient(
         printf("DbiasE[%d]=%f\n", j, DbiasE[j]);
     }
 }
+
+void apply_gradient(
+    double *DweightE,
+    double *DbiasE,
+    double learning_rate,
+    double *weight,
+    double *bias,
+    const int INPUT_NODES,
+    const int OUTPUT_NODES
+){
+    for(int j=0; j<OUTPUT_NODES;j++){
+        for(int i=0; i<INPUT_NODES;i++){
+            weight[i*OUTPUT_NODES+j] -= learning_rate*DweightE[i*OUTPUT_NODES+j];
+            printf("weight[%d][%d]=%f\n", i,j,weight[i*OUTPUT_NODES+j]);
+        }
+        bias[j] -= learning_rate*DbiasE[j];
+        printf("bias[%d]=%f\n",j, bias[j]);
+    }
+
+
+}
