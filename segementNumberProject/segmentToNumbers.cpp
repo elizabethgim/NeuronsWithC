@@ -2,9 +2,9 @@
 #include "../source/myann.h"
 
 const int PATTERN_COUNT = 10;
-const int INPUT_NODES=7;
+const int INPUT_NODES= 7;
 const int HIDDEN_NODES = 8;
-const int OUTPUT_NODES=4;
+const int OUTPUT_NODES= 4;
 
 double input[PATTERN_COUNT][INPUT_NODES] = {
 	{1, 1, 1, 1, 1, 1, 0}, // 0
@@ -34,21 +34,21 @@ double target[PATTERN_COUNT][INPUT_NODES] = {
 };   
 
 double hidden[HIDDEN_NODES];
-double output[OUTPUT_NODES];
+double output[PATTERN_COUNT][OUTPUT_NODES];
 double weightH[INPUT_NODES][HIDDEN_NODES];
 double biasH[HIDDEN_NODES];
-double weightO[HIDDEN_NODES][HIDDEN_NODES];
+double weightO[HIDDEN_NODES][OUTPUT_NODES];
 double biasO[OUTPUT_NODES];
 
 double output_b[OUTPUT_NODES];
 double hidden_b[HIDDEN_NODES];
 
 double DoutputE[OUTPUT_NODES];
-double DweightOE[INPUT_NODES][HIDDEN_NODES];
-double DbiasOE[INPUT_NODES][HIDDEN_NODES];
+double DweightOE[HIDDEN_NODES][OUTPUT_NODES];
+double DbiasOE[OUTPUT_NODES];
 
 double DweightHE[INPUT_NODES][HIDDEN_NODES];
-double DbiasHE[INPUT_NODES][HIDDEN_NODES];
+double DbiasHE[HIDDEN_NODES];
 
 
 
