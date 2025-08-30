@@ -53,6 +53,9 @@ double DbiasHE[HIDDEN_NODES];
 
 
 int main(){
+	initialize_weight((double *)weightH, biasH, INPUT_NODES, OUTPUT_NODES);
+	initialize_weight((double *)weightO, biasO, INPUT_NODES, OUTPUT_NODES);
+
 	for(int epoch=1;epoch<=1000;epoch++){
 		for(int p = 0;p<PATTERN_COUNT;p++){	
 			feed_forward(input[p], (const double*)weightH, biasH, hidden, INPUT_NODES, HIDDEN_NODES, SIGMOID);

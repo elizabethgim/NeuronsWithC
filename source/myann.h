@@ -169,3 +169,26 @@ void apply_gradient(
 
 
 }
+
+const double INITIAL_WEIGHT_MAX = 0.5;
+
+void initialize_weight(
+    double *weight,
+    double *bias,
+    int INPUT_NODES,
+    int OUTPUT_NODES
+){
+    double rand_num;
+    for(int j=0;j<OUTPUT_NODES;j++){
+        for(int i=0;i<INPUT_NODES;i++){
+            rand_num = double(rand()%1000)/1000;
+            weight[i*OUTPUT_NODES+j]=2.0*(rand_num-0.5)*INITIAL_WEIGHT_MAX;
+            printf("%6.3f ", weight[i*OUTPUT_NODES+j]);
+        }
+
+        rand_num = double(rand()%1000)/1000;
+        bias[j] = 2.0*(rand_num-0.5)*INITIAL_WEIGHT_MAX;
+        printf("%6.3f\n ",bias[j]);
+    }
+    printf("\n");
+}
