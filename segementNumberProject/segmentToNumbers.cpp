@@ -50,19 +50,35 @@ double DbiasOE[OUTPUT_NODES];
 double DweightHE[INPUT_NODES][HIDDEN_NODES];
 double DbiasHE[HIDDEN_NODES];
 
-
+int shuffled_pattern[PATTERN_COUNT];
 
 int main(){
 	initialize_weight((double *)weightH, biasH, INPUT_NODES, OUTPUT_NODES);
 	initialize_weight((double *)weightO, biasO, INPUT_NODES, OUTPUT_NODES);
 
+	for(int pc=0;pc<PATTERN_COUNT;pc++){
+		shuffled_pattern[pc] = pc;
+	}
+
 	for(int epoch=1;epoch<=1000;epoch++){
+
+		int tmp_a = 0;
+		int tmp_b = 0;
+
+		for(int pc=0;pc<PATTERN_COUNT;pc++){
+			tmp_a=rand()%PATTERN_COUNT;
+			tmp_b=shuffled_pattern[pc];
+			shuffled_pattern[pc] = shuffled_pattern[tmp_a];
+			shuffled_pattern[tmp_a] = tmp_b;
+		}
+
+		double sum_error = 0.;
 		for(int p = 0;p<PATTERN_COUNT;p++){	
 			feed_forward(input[p], (const double*)weightH, biasH, hidden, INPUT_NODES, HIDDEN_NODES, SIGMOID);
 			feed_forward(hidden, (const double*)weightO, biasO, output[p], HIDDEN_NODES, OUTPUT_NODES, SIGMOID);
 			
 			double Error = get_error(target[p], output[p], OUTPUT_NODES, MSE);
-
+			sum_error += Error;
 			// if(Error < 0.0001){
 			// 	printf("epoch = %d\n", epoch);
 			// 	printf("Error = %f\n", Error);
@@ -86,9 +102,26 @@ int main(){
 
 			apply_gradient((double *)DweightOE, (double *)DbiasOE, learning_rate, (double *)weightO, biasO, HIDDEN_NODES, OUTPUT_NODES);
 			apply_gradient((double *)DweightHE, (double *)DbiasHE, learning_rate, (double *)weightH, biasH, INPUT_NODES, HIDDEN_NODES);
-
+			
+			
 		}
-		if(epoch%100==0) printf(".");
+		// if(epoch%100==0) printf(".");
+		# define CNT_LOOP 100
+		static int cnt_loop = CNT_LOOP;
+		cnt_loop --;
+		if(cnt_loop==0)
+			cnt_loop = CNT_LOOP;
+		else
+			continue;
+		
+		printf("sum error: %f\n", sum_error);
+		for(int i=0;i<INPUT_NODES;i++){
+			for(int j=0;j<HIDDEN_NODES;j++){
+				printf("%7.3f ", weightH[i][j]);
+			}
+			printf("\n");
+		}
+		if(sum_error < 0.0004) break;
 	}
 	printf("\n");
 
