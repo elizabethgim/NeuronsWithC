@@ -53,36 +53,50 @@ double DbiasHE[INPUT_NODES][HIDDEN_NODES];
 
 
 int main(){
-	for(int epoch=1;epoch<=1000000;epoch++){
-		feed_forward(input[2], (const double*)weightH, biasH, hidden, INPUT_NODES, HIDDEN_NODES, SIGMOID);
-		feed_forward(hidden, (const double*)weightO, biasO, output, HIDDEN_NODES, OUTPUT_NODES, SIGMOID);
-		
-		double Error = get_error(target[2], output, OUTPUT_NODES, MSE);
-
-		if(Error < 0.0001){
-			printf("epoch = %d\n", epoch);
-			printf("Error = %f\n", Error);
+	for(int epoch=1;epoch<=1000;epoch++){
+		for(int p = 0;p<PATTERN_COUNT;p++){	
+			feed_forward(input[p], (const double*)weightH, biasH, hidden, INPUT_NODES, HIDDEN_NODES, SIGMOID);
+			feed_forward(hidden, (const double*)weightO, biasO, output[p], HIDDEN_NODES, OUTPUT_NODES, SIGMOID);
 			
-			for(int i=0;i<OUTPUT_NODES;i++){
-				printf("output[%d] = %f\n", i, output[i]);
-			}
-			break;
+			double Error = get_error(target[p], output[p], OUTPUT_NODES, MSE);
+
+			// if(Error < 0.0001){
+			// 	printf("epoch = %d\n", epoch);
+			// 	printf("Error = %f\n", Error);
+				
+			// 	for(int i=0;i<OUTPUT_NODES;i++){
+			// 		printf("output[%d] = %f\n", i, output[i]);
+			// 	}
+			// 	break;
+			// }
+			
+
+			get_DoutputE(target[p], output[p], DoutputE, OUTPUT_NODES);
+
+			prepare_back_propagation(DoutputE, output[p], output_b, OUTPUT_NODES, SIGMOID);
+			back_propagation(output_b, (const double*)weightO, hidden, hidden_b, OUTPUT_NODES, INPUT_NODES, SIGMOID);
+			
+			get_gradients((double *)DweightOE, (double *)DbiasOE, output_b, hidden, HIDDEN_NODES, OUTPUT_NODES);
+			get_gradients((double *)DweightHE, (double *)DbiasHE, hidden_b, input[p], INPUT_NODES, HIDDEN_NODES);
+
+			double learning_rate = 0.5;
+
+			apply_gradient((double *)DweightOE, (double *)DbiasOE, learning_rate, (double *)weightO, biasO, HIDDEN_NODES, OUTPUT_NODES);
+			apply_gradient((double *)DweightHE, (double *)DbiasHE, learning_rate, (double *)weightH, biasH, INPUT_NODES, HIDDEN_NODES);
+
 		}
-		
+		if(epoch%100==0) printf(".");
+	}
+	printf("\n");
 
-		get_DoutputE(target[2], output, DoutputE, OUTPUT_NODES);
-
-		prepare_back_propagation(DoutputE, output, output_b, OUTPUT_NODES, SIGMOID);
-		back_propagation(output_b, (const double*)weightO, hidden, hidden_b, OUTPUT_NODES, INPUT_NODES, SIGMOID);
-		
-		get_gradients((double *)DweightOE, (double *)DbiasOE, output_b, hidden, HIDDEN_NODES, OUTPUT_NODES);
-		get_gradients((double *)DweightHE, (double *)DbiasHE, hidden_b, input[2], INPUT_NODES, HIDDEN_NODES);
-
-		double learning_rate = 0.5;
-
-		apply_gradient((double *)DweightOE, (double *)DbiasOE, learning_rate, (double *)weightO, biasO, HIDDEN_NODES, OUTPUT_NODES);
-		apply_gradient((double *)DweightHE, (double *)DbiasHE, learning_rate, (double *)weightH, biasH, INPUT_NODES, HIDDEN_NODES);
-
-		
+	for(int pc=0;pc<PATTERN_COUNT;pc++){
+		printf("target %d : ", pc);
+		for(int on=0;on<OUTPUT_NODES;on){
+			printf("%.0f ", target[pc][on]);
+		}
+		printf("pattern %d : ", pc);
+		for(int on=0;on<OUTPUT_NODES;on++){
+			printf("%.2f ",output[pc][on]);
+		}
 	}
 }
