@@ -52,6 +52,17 @@ double DbiasHE[HIDDEN_NODES];
 
 int shuffled_pattern[PATTERN_COUNT];
 
+void print_weight(
+	const double* weightH,
+	const int INPUT_NODES,
+	const int HIDDEN_NODES
+);
+
+void print_result(
+	const double *target,
+	const double *output
+);
+
 int main(){
 	initialize_weight((double *)weightH, biasH, INPUT_NODES, OUTPUT_NODES);
 	initialize_weight((double *)weightO, biasO, INPUT_NODES, OUTPUT_NODES);
@@ -79,17 +90,7 @@ int main(){
 			
 			double Error = get_error(target[p], output[p], OUTPUT_NODES, MSE);
 			sum_error += Error;
-			// if(Error < 0.0001){
-			// 	printf("epoch = %d\n", epoch);
-			// 	printf("Error = %f\n", Error);
-				
-			// 	for(int i=0;i<OUTPUT_NODES;i++){
-			// 		printf("output[%d] = %f\n", i, output[i]);
-			// 	}
-			// 	break;
-			// }
 			
-
 			get_DoutputE(target[p], output[p], DoutputE, OUTPUT_NODES);
 
 			prepare_back_propagation(DoutputE, output[p], output_b, OUTPUT_NODES, SIGMOID);
@@ -105,7 +106,7 @@ int main(){
 			
 			
 		}
-		// if(epoch%100==0) printf(".");
+		
 		# define CNT_LOOP 100
 		static int cnt_loop = CNT_LOOP;
 		cnt_loop --;
@@ -115,25 +116,43 @@ int main(){
 			continue;
 		
 		printf("sum error: %f\n", sum_error);
-		for(int i=0;i<INPUT_NODES;i++){
-			for(int j=0;j<HIDDEN_NODES;j++){
-				printf("%7.3f ", weightH[i][j]);
-			}
-			printf("\n");
-		}
+
+		print_weight((double *)weightH, INPUT_NODES, HIDDEN_NODES);
+
 		if(sum_error < 0.0004) break;
 	}
+
+	print_result((double *)target, (double *)output);
+}
+
+void print_weight(
+	const double* weightH,
+	const int INPUT_NODES,
+	const int HIDDEN_NODES
+){
+	for(int i=0;i<INPUT_NODES;i++){
+		for(int j=0;j<HIDDEN_NODES;j++){
+			printf("%7.3f ", weightH[i*HIDDEN_NODES+j]);
+		}
+		printf("\n");
+	}
+}
+
+void print_result(
+	const double *target,
+	const double *output
+){
 	printf("\n");
 
 	for(int pc=0;pc<PATTERN_COUNT;pc++){
 		printf("target %d : ", pc);
 		for(int on=0;on<OUTPUT_NODES;on++){
-			printf("%.0f ", target[pc][on]);
+			printf("%.0f ", target[pc*OUTPUT_NODES+on]);
 		}
 
 		printf("pattern %d : ", pc);
 		for(int on=0;on<OUTPUT_NODES;on++){
-			printf("%.2f ",output[pc][on]);
+			printf("%.2f ",output[pc*OUTPUT_NODES+on]);
 		}
 		printf("\n");
 	}
