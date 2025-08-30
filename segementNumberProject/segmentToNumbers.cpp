@@ -20,7 +20,7 @@ double input[PATTERN_COUNT][INPUT_NODES] = {
 };
 
 
-double target[PATTERN_COUNT][INPUT_NODES] = {
+double target[PATTERN_COUNT][OUTPUT_NODES] = {
 	{0, 0, 0, 0},
 	{0, 0, 0, 1},
 	{0, 0, 1, 0},
@@ -91,12 +91,14 @@ int main(){
 
 	for(int pc=0;pc<PATTERN_COUNT;pc++){
 		printf("target %d : ", pc);
-		for(int on=0;on<OUTPUT_NODES;on){
+		for(int on=0;on<OUTPUT_NODES;on++){
 			printf("%.0f ", target[pc][on]);
 		}
+
 		printf("pattern %d : ", pc);
 		for(int on=0;on<OUTPUT_NODES;on++){
 			printf("%.2f ",output[pc][on]);
 		}
+		printf("\n");
 	}
 }
